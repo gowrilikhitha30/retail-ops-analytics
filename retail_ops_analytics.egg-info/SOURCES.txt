@@ -1,0 +1,7 @@
+README.md
+setup.py
+retail_ops_analytics.egg-info/PKG-INFO
+retail_ops_analytics.egg-info/SOURCES.txt
+retail_ops_analytics.egg-info/dependency_links.txt
+retail_ops_analytics.egg-info/requires.txt
+retail_ops_analytics.egg-info/top_level.txt
