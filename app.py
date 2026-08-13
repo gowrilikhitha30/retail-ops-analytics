@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sqlite3
 from datetime import datetime, timedelta
 
 # 1. Generate Synthetic Retail Operations Data
@@ -23,14 +24,32 @@ df = pd.DataFrame(data)
 df.to_csv('retail_operations_data.csv', index=False)
 print("✅ Success: 'retail_operations_data.csv' created with 1,000 operational records!")
 
-print("\n--- EXECUTIVE OPERATIONS SUMMARY ---")
-summary = df.groupby('Category').agg(
-    Total_Orders=('OrderID', 'count'),
-    On_Time_Deliveries=('DeliveryStatus', lambda x: (x == 'On-Time').sum()),
-    Total_Returns=('ReturnRequested', lambda x: (x == 'Yes').sum())
-).reset_index()
+# 2. Relational Database Integration via SQLite
+print("\n🗄️ Initializing Local Relational Database Engine...")
+conn = sqlite3.connect(':memory:')  # Creates an in-memory SQL database
+df.to_sql('orders', conn, index=False, if_exists='replace')
 
-summary['On_Time_Delivery_Rate_%'] = ((summary['On_Time_Deliveries'] / summary['Total_Orders']) * 100).round(2)
-summary['Return_Rate_%'] = ((summary['Total_Returns'] / summary['Total_Orders']) * 100).round(2)
+# 3. Read and Execute queries.sql File Natively
+try:
+    with open('queries.sql', 'r') as f:
+        sql_script = f.read()
+    
+    # Split queries by semicolon to execute sequentially
+    queries = [q.strip() for q in sql_script.split(';') if q.strip()]
+    
+    print("\n--- RUNNING SQL METRICS EXTRACTION ENGINE ---")
+    titles = [
+        "1. EXECUTIVE METRICS BY PRODUCT CATEGORY",
+        "2. REGIONAL SHIPPING EFFICIENCY & TRAFFIC BOTTLENECKS",
+        "3. DEEP DIVE: CRITICAL RETURN ANOMALIES"
+    ]
+    
+    for i, query in enumerate(queries[:3]):
+        print(f"\n🔹 Executing: {titles[i]}")
+        result_df = pd.read_sql_query(query, conn)
+        print(result_df.to_string(index=False))
+        
+except FileNotFoundError:
+    print("⚠️ Warning: 'queries.sql' file not found locally. Skipping direct SQL execution test.")
 
-print(summary[['Category', 'Total_Orders', 'On_Time_Delivery_Rate_%', 'Return_Rate_%']].to_string(index=False))
+conn.close()
