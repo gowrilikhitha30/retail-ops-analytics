@@ -30,3 +30,19 @@ GROUP BY
     Region
 ORDER BY 
     Regional_Delay_Rate_Pct DESC;
+
+-- 3. DEEP DIVE: CRITICAL RETURN ANOMALIES
+SELECT 
+    OrderID,
+    Category,
+    Sales,
+    Region,
+    DeliveryStatus
+FROM 
+    orders
+WHERE 
+    ReturnRequested = 'Yes'
+    AND Sales > 300.00
+ORDER BY 
+    Sales DESC
+LIMIT 5;
