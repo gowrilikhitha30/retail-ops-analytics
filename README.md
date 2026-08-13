@@ -7,13 +7,13 @@ Managing high-volume retail logistics requires strict observation of delivery he
 
 ## ⚙️ Architecture & Technical Core Components
 
-### 1. Data Pipeline Automation (`app.py`)
+### 1. Data Pipeline & Local ETL Automation (`app.py`)
 - Programmatically engineers a synthetic operational dataset consisting of **1,000 retail logistics records**.
 - Models complex order variables across **4 core product categories** (Electronics, Apparel, Home, Books).
-- Automatically exports processed rows into a relational baseline file (`retail_operations_data.csv`).
+- Spin up an **in-memory SQLite database instance**, maps the structured rows into an active SQL table schema, and sequentially executes external analytical processing logic.
 
 ### 2. Relational Database KPI Extraction (`queries.sql`)
-- Contains production-ready SQL scripts to query large tables using advanced groupings (`GROUP BY`).
+- Contains production-ready SQL scripts executed natively by the automated pipeline engine using advanced groupings (`GROUP BY`).
 - Leverages multi-conditional logic (`CASE WHEN`) to isolate **On-Time Delivery Rates (OTDR %)** and **Return Rates (RR %)**.
 - Formulates deep-dives to flag high-value order anomalies and regional shipping delays.
 
